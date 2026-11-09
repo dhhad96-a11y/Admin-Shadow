@@ -1,425 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SHADOW - Reseller & Admin Panel</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SHADOW v3.3 - VIP HUB & Admin Panel</title>
 
-        body {
-            background-color: #020204;
-            background-image: 
-                radial-gradient(circle at 50% 20%, rgba(255, 15, 15, 0.12) 0%, transparent 60%),
-                radial-gradient(circle at 50% 90%, rgba(100, 0, 0, 0.08) 0%, transparent 50%);
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+<style>
+:root{--accent:#00b4ff;--accent-glow:rgba(0,180,255,0.25);--bg:#07090e;--panel:#0d111a;--border:rgba(0,180,255,0.2);--text:#fff;--muted:#8892b0;--red:#ff2222}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:15px;overflow-x:hidden}
+.container{width:100%;max-width:420px;position:relative}
 
-        .screen {
-            display: none;
-            width: 100%;
-            max-width: 400px;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+.screen { display: none; width: 100%; animation: fadeIn 0.4s ease-in-out; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
 
-        .auth-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            background: rgba(10, 10, 15, 0.95);
-            border: 1px solid rgba(255, 34, 34, 0.35);
-            border-radius: 28px;
-            padding: 35px 25px;
-            box-shadow: 0 0 45px rgba(255, 34, 34, 0.25);
-            backdrop-filter: blur(20px);
-        }
+.card{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:22px;margin-bottom:15px;box-shadow:0 10px 30px rgba(0,0,0,0.5);width:100%}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.app-title{font-weight:900;font-size:16px;letter-spacing:1px}
+.logout-btn{background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:bold;cursor:pointer}
 
-        .brand-section {
-            margin-bottom: 25px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+/* تصميم الدائرة الزمنية */
+.timer-circle-box{text-align:center;padding:15px 0;position:relative}
+.circle-ring{width:210px;height:210px;border:2px dashed rgba(0,180,255,0.3);border-radius:50%;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:radial-gradient(circle, rgba(0,180,255,0.03) 0%, transparent 70%);box-shadow:0 0 40px rgba(0,180,255,0.08)}
+.client-name-txt{font-size:12px;letter-spacing:2px;color:var(--accent);font-weight:800;margin-bottom:6px}
+.main-client-txt{font-size:16px;font-weight:900;letter-spacing:2px;margin-bottom:12px}
+.countdown-txt{font-size:22px;font-weight:900;letter-spacing:1px;color:#fff}
+.countdown-txt span{font-size:10px;color:var(--muted);margin:0 2px}
 
-        .badge-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 34, 34, 0.07);
-            border: 1px solid rgba(255, 34, 34, 0.25);
-            border-radius: 999px;
-            padding: 6px 16px;
-            font-size: 10px;
-            font-weight: 800;
-            color: #ff3333;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-            box-shadow: 0 0 15px rgba(255, 34, 34, 0.1);
-        }
+/* تفاصيل المفتاح والجهاز */
+.info-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-top:15px}
+.info-box{background:#04060a;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px 5px;text-align:center}
+.info-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px}
+.info-val{font-size:11px;font-weight:bold;color:#fff}
 
-        .main-title {
-            font-size: 26px;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: 2px;
-            font-style: italic;
-            line-height: 1.1;
-            text-shadow: 0 0 20px rgba(255, 34, 34, 0.4);
-        }
+.key-row{background:#04060a;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.key-txt{font-size:11px;color:var(--muted);letter-spacing:1px}
+.icon-btns{display:flex;gap:5px}
+.icon-btn{background:#111827;border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px}
 
-        .sub-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #ff3333;
-            letter-spacing: 3px;
-            font-style: italic;
-            margin-top: 2px;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.6);
-        }
+/* الأزرار والفورمات */
+.sub-btn{width:100%;background:linear-gradient(135deg, #0099ff, #0055ff);color:#fff;border:none;border-radius:14px;padding:16px 20px;font-weight:900;font-size:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-top:12px;box-shadow:0 6px 20px rgba(0,120,255,0.35);transition:0.2s}
+.sub-btn:active{transform:scale(0.98)}
+.sub-subtxt{font-size:10px;color:rgba(255,255,255,0.7);font-weight:normal;margin-top:2px}
+.arrow-icon{background:rgba(255,255,255,0.2);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
 
-        .divider-glow {
-            width: 45px;
-            height: 3px;
-            background: #ff2222;
-            border-radius: 99px;
-            margin: 14px 0;
-            box-shadow: 0 0 12px #ff2222;
-        }
+.nav-bar{background:var(--panel);border:1px solid var(--border);border-radius:18px;display:flex;padding:10px;margin-top:10px;width:100%}
+.nav-item{flex:1;text-align:center;color:var(--muted);font-size:10px;cursor:pointer;font-weight:bold;transition:0.2s}
+.nav-item.active{color:var(--accent)}
+.nav-icon{font-size:16px;margin-bottom:2px}
 
-        .epic-quote {
-            font-size: 10px;
-            color: #888899;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
+.game-tools{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-top:12px}
+.tool-btn{background:#04060a;border:1px solid rgba(0,180,255,0.3);color:#fff;border-radius:10px;padding:10px 5px;font-size:10px;font-weight:bold;cursor:pointer;text-align:center;transition:0.2s}
+.tool-btn.active{background:var(--accent);color:#000;box-shadow:0 0 12px var(--accent-glow)}
 
-        .input-box-wrapper {
-            position: relative;
-            width: 100%;
-            margin-bottom: 20px;
-        }
+.vpn-select, .select-box, .text-input{width:100%;background:#04060a;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;color:#fff;font-size:12px;outline:none;margin-top:10px}
+.input{width:100%;background:#04060a;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;color:#fff;font-size:14px;outline:none;text-align:center;margin-top:10px}
+.input:focus, .vpn-select:focus, .select-box:focus, .text-input:focus{border-color:var(--accent)}
 
-        .input-icon-left {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 15px;
-            filter: drop-shadow(0 0 5px rgba(255, 51, 51, 0.6));
-        }
+.section-title { font-size: 12px; font-weight: 700; color: var(--accent); margin: 15px 0 8px; border-left: 3px solid var(--accent); padding-left: 8px; text-align: left; letter-spacing: 1px; }
+.form-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; display: block; text-transform: uppercase; font-weight: 600; text-align: left; }
+.reseller-list { max-height: 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.list-item { background: #04060a; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; font-size: 11px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+.delete-btn { background: #2a0808; border: 1px solid #551111; color: #ff4d4d; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
 
-        .input-icon-right {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 15px;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.2s;
-        }
-        .input-icon-right:hover {
-            opacity: 1;
-        }
+.tabs{display:flex; background:#04060a; border-radius:999px; padding:4px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.06); width:100%}
+.tab{flex:1; padding:10px; border-radius:999px; font-size:11px; font-weight:bold; cursor:pointer; text-align:center; color:var(--muted)}
+.tab.active{background:var(--accent); color:#000}
 
-        .key-input {
-            width: 100%;
-            background: #08080c;
-            border: 1px solid #1e1e2d;
-            border-radius: 16px;
-            padding: 16px 45px 16px 48px;
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-            letter-spacing: 1.5px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
-            text-align: center;
-        }
+.hidden{display:none!important}
 
-        .key-input:focus {
-            border-color: #ff2222;
-            background: #0d0d14;
-            box-shadow: 0 0 20px rgba(255, 34, 34, 0.25), inset 0 2px 6px rgba(0,0,0,0.8);
-        }
+#toast { position: fixed; left: 50%; bottom: 30px; transform: translate(-50%, 20px); background: #120505; border: 1px solid var(--red); color: #fff; padding: 12px 26px; border-radius: 999px; font-weight: bold; font-size: 13px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 6000; box-shadow: 0 0 30px rgba(255, 34, 34, 0.7); }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
 
-        .unlock-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #cc1111, #ff2222);
-            color: #fff;
-            border: none;
-            border-radius: 16px;
-            padding: 16px;
-            font-size: 15px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(230, 25, 25, 0.45);
-            letter-spacing: 2px;
-        }
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        .unlock-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 34, 34, 0.7);
-        }
+    const firebaseConfig = {
+        apiKey: "AIzaSyC1h9PKwJ98fDDVbV5dxLScJZjXMyz-2k4",
+        authDomain: "bbbdhr-cfb74.firebaseapp.com",
+        projectId: "bbbdhr-cfb74",
+        storageBucket: "bbbdhr-cfb74.firebasestorage.app",
+        messagingSenderId: "772597383789",
+        appId: "1:772597383789:android:4bad4df8683fb54e7e3564"
+    };
 
-        /* لوحة التحكم (Dashboard) */
-        .dashboard-card {
-            background: rgba(10, 10, 15, 0.95);
-            border: 1px solid rgba(255, 34, 34, 0.35);
-            border-radius: 24px;
-            padding: 22px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 0 45px rgba(255, 34, 34, 0.25);
-            backdrop-filter: blur(20px);
-        }
-        .dash-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #1a1a24;
-        }
-        .admin-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #ddddf0;
-        }
-        .balance-badge {
-            background: #1a0808;
-            border: 1px solid #4a1515;
-            color: #ff4d4d;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .section-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #ff3333;
-            margin: 15px 0 8px;
-            border-left: 3px solid #ff3333;
-            padding-left: 8px;
-            text-align: left;
-            letter-spacing: 1px;
-        }
-        .form-label {
-            font-size: 10px;
-            color: #888899;
-            margin-bottom: 4px;
-            display: block;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        .select-box, .text-input {
-            width: 100%;
-            background: #08080c;
-            border: 1px solid #1e1e2d;
-            border-radius: 12px;
-            padding: 12px;
-            color: #e1e1f0;
-            font-size: 12px;
-            margin-bottom: 10px;
-            outline: none;
-        }
-        .select-box:focus, .text-input:focus {
-            border-color: #ff2222;
-        }
-        .reseller-list {
-            max-height: 110px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-        .list-item {
-            background: #08080c;
-            border: 1px solid #1e1e2d;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            color: #ff5555;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .delete-btn {
-            background: #2a0808;
-            border: 1px solid #551111;
-            color: #ff4d4d;
-            padding: 3px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        .key-single-box {
-            background: #08080c;
-            border: 2px dashed #ff3333;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin: 12px 0;
-        }
-        .key-single-text {
-            font-family: monospace;
-            font-size: 13px;
-            font-weight: bold;
-            color: #2ecc71;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        .copy-btn {
-            background: #1e1e2d;
-            border: 1px solid #333344;
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 11px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            font-size: 11px;
-            color: #888899;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        .back-link:hover {
-            color: #fff;
-        }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        #toast {
-            position: fixed;
-            left: 50%;
-            bottom: 30px;
-            transform: translate(-50%, 20px);
-            background: #120505;
-            border: 1px solid #ff2222;
-            color: #fff;
-            padding: 12px 26px;
-            border-radius: 999px;
-            font-weight: bold;
-            font-size: 13px;
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.3s;
-            z-index: 6000;
-            box-shadow: 0 0 30px rgba(255, 34, 34, 0.7);
-        }
-        #toast.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
-    </style>
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDocs = getDocs;
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.getDoc = getDoc;
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1h9PKwJ98fDDVbV5dxLScJZjXMyz-2k4",
-            authDomain: "bbbdhr-cfb74.firebaseapp.com",
-            projectId: "bbbdhr-cfb74",
-            storageBucket: "bbbdhr-cfb74.firebasestorage.app",
-            messagingSenderId: "772597383789",
-            appId: "1:772597383789:android:4bad4df8683fb54e7e3564"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.db = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.getDocs = getDocs;
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
-        window.updateDoc = updateDoc;
-
-        window.loadCloudData();
-    </script>
+    window.dispatchEvent(new Event('firebase-ready'));
+</script>
 </head>
 <body>
 
-    <div id="toast">✓ Success!</div>
+<div id="toast">✓ Success!</div>
 
-    <!-- شاشة تسجيل دخول الأدمن أو الموزع -->
+<div class="container">
+
+    <!-- شاشة تسجيل الدخول الموحدة (مستخدمين + أدمن/موزعين) -->
     <div id="loginScreen" class="screen active">
-        <div class="auth-container">
-            <div class="brand-section">
-                <div class="badge-pill">🔒 ADMIN & RESELLER</div>
-                <div class="main-title">SHADOW</div>
-                <div class="sub-title">CONTROL PANEL</div>
-                <div class="divider-glow"></div>
-                <div class="epic-quote">ENTER ADMIN PASSWORD (ADHAM) OR USERNAME</div>
+        <div class="card" style="text-align: center; padding: 30px 20px;">
+            <div style="font-size: 22px; font-weight: 900; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px;">SHADOW v3.3</div>
+            <div style="font-size: 10px; color: var(--muted); letter-spacing: 4px; margin-bottom: 20px;">SECURE GAMING HUB</div>
+
+            <div class="tabs">
+                <div id="tabU" class="tab active" onclick="switchLoginTab('u')">USER KEY</div>
+                <div id="tabA" class="tab" onclick="switchLoginTab('a')">ADMIN / RESELLER</div>
             </div>
 
-            <div class="input-box-wrapper">
-                <span class="input-icon-left">👤</span>
-                <input type="password" class="key-input" id="userInput" placeholder="Password or Username">
-                <span class="input-icon-right" onclick="togglePassVisibility()">👁️‍🗨️</span>
+            <div id="formU">
+                <input id="codeIn" class="input" placeholder="Enter Access Key (SHDW-...)">
+                <button class="sub-btn" style="justify-content:center; margin-top:20px;" onclick="loginUser()">LOGIN & UNLOCK</button>
             </div>
 
-            <button class="unlock-btn" onclick="handleLogin()">ACCESS PANEL</button>
+            <div id="formA" class="hidden">
+                <input id="userInput" class="input" type="password" placeholder="Admin Pass or Reseller Name">
+                <button class="sub-btn" style="justify-content:center; margin-top:20px;" onclick="handleLogin()">ACCESS PANEL</button>
+            </div>
         </div>
     </div>
 
-    <!-- لوحة التحكم المتكاملة -->
-    <div id="dashboardScreen" class="screen">
-        <div class="dashboard-card">
-            <div class="dash-header">
-                <span class="admin-title" id="panelTitle">👑 Control Panel</span>
-                <span class="balance-badge" id="accountBalance">UNLIMITED</span>
+    <!-- الواجهة الرئيسية للمستخدم (HOME) -->
+    <div id="homePage" class="screen">
+        <div class="card">
+            <div class="top-bar">
+              <div class="app-title">SHADOW v3.3 CLIENT</div>
+              <button class="logout-btn" onclick="doLogout()">LOGOUT</button>
             </div>
 
-            <!-- قسم إدارة الموزعين (يظهر للأدمن ADHAM فقط) -->
-            <div id="adminResellerSection" style="display:none;">
+            <div class="timer-circle-box">
+              <div class="circle-ring">
+                <div class="client-name-txt">SHADOW v3.3</div>
+                <div class="main-client-txt">GAMING CLIENT</div>
+                <div id="timerDisplay" class="countdown-txt">00<span>H</span> 02<span>M</span> 36<span>S</span></div>
+              </div>
+            </div>
+
+            <div class="key-row">
+              <div class="key-txt" id="activeKeyView">SHDW-XXXX-XXXX-XXXX</div>
+              <div class="icon-btns">
+                <div class="icon-btn" onclick="copyActiveKey()" title="Copy">📋</div>
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-box">
+                <div class="info-label">DEVICE</div>
+                <div class="info-val" id="deviceSlot">0/1</div>
+              </div>
+              <div class="info-box">
+                <div class="info-label">CREATED</div>
+                <div class="info-val" id="createdDate">-</div>
+              </div>
+              <div class="info-box">
+                <div class="info-label">EXPIRES</div>
+                <div class="info-val" id="expireDate">-</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+              <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px; letter-spacing: 1px;">FREE FIRE ULTRA PING BOOSTERS:</div>
+              <select id="serverRegion" class="vpn-select" onchange="changeVpnServer(this.value)">
+                <option value="india">🇮🇳 India Server (Ping ~64ms)</option>
+                <option value="egypt" selected>🇪🇬 Egypt Server (Ping ~75ms)</option>
+                <option value="algeria">🇩🇿 Algeria Server (Ping ~90ms)</option>
+                <option value="tunisia">🇹🇳 Tunisia Server (Ping ~110ms)</option>
+                <option value="eu">🇪🇺 Europe Ultra Low Ping (~130ms)</option>
+              </select>
+            </div>
+
+            <div class="game-tools">
+              <button class="tool-btn" id="btnAim" onclick="toggleTool('Aim')">🎯 Aim Bot</button>
+              <button class="tool-btn" id="btnEsp" onclick="toggleTool('Esp')">👁️ ESP Box</button>
+              <button class="tool-btn" id="btnFreeze" onclick="toggleTool('Freeze')">⚡ Fteeze</button>
+            </div>
+
+            <button class="sub-btn" onclick="launchHappVpn()">
+              <div>
+                <div>ADD SUBSCRIPTION</div>
+                <div class="sub-subtxt">Works with Happ (Free Fire Boosted)</div>
+              </div>
+              <div class="arrow-icon">→</div>
+            </button>
+        </div>
+
+        <div class="nav-bar">
+          <div class="nav-item active" onclick="switchNav('home')">
+            <div class="nav-icon">🏠</div>
+            <div>HOME</div>
+          </div>
+          <div class="nav-item" onclick="switchNav('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div>SETTINGS</div>
+          </div>
+        </div>
+    </div>
+
+    <!-- صفحة الإعدادات (SETTINGS) -->
+    <div id="settingsPage" class="screen">
+        <div class="card">
+            <div class="top-bar">
+              <div class="app-title">SETTINGS</div>
+              <button class="logout-btn" onclick="switchNav('home')">BACK</button>
+            </div>
+
+            <div style="background:#04060a; border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:16px; margin-top:10px;">
+              <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-bottom: 12px;">DEVELOPER INFO</div>
+              
+              <div style="margin-bottom: 12px; font-size: 12px; text-align: left;">
+                <span style="color: var(--muted);">Telegram:</span><br>
+                <a href="https://t.me/Adhambacko" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold;">https://t.me/Adhambacko</a>
+              </div>
+
+              <div style="font-size: 12px; text-align: left;">
+                <span style="color: var(--muted);">Created by:</span><br>
+                <span style="color: #fff; font-weight: bold; font-size: 14px;">Adham modz</span>
+              </div>
+            </div>
+
+            <div style="background:#04060a; border:1px solid rgba(255,255,255,0.06); border-radius:14px; padding:16px; margin-top:12px; text-align: left;">
+              <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-bottom: 8px;">FREE FIRE OPTIMIZATION</div>
+              <div style="font-size: 11px; color: var(--muted); line-height: 1.5;">
+                تم تفعيل خوارزميات حزم بيانات Hysteria v2 لضمان استقرار البينغ بين 64ms و 150ms بدون أي لاغ نهائياً أثناء مواجهات فري فاير.
+              </div>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+          <div class="nav-item" onclick="switchNav('home')">
+            <div class="nav-icon">🏠</div>
+            <div>HOME</div>
+          </div>
+          <div class="nav-item active" onclick="switchNav('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div>SETTINGS</div>
+          </div>
+        </div>
+    </div>
+
+    <!-- لوحة التحكم المتكاملة (Admin & Reseller Panel) -->
+    <div id="adminPanelScreen" class="screen">
+        <div class="card">
+            <div class="top-bar">
+                <span class="app-title" id="panelTitle">👑 Control Panel</span>
+                <span class="logout-btn" id="accountBalance" style="background:#1a0808; border-color:#4a1515; color:#ff4d4d;">UNLIMITED</span>
+            </div>
+
+            <!-- قسم إدارة الموزعين (يظهر للأدمن فقط برمز 050707070) -->
+            <div id="adminResellerSection" style="display:none; width: 100%;">
                 <div class="section-title">👥 Manage Resellers</div>
                 <label class="form-label">Reseller Username:</label>
                 <input type="text" class="text-input" id="resellerName" placeholder="Username">
                 <label class="form-label">Initial Balance ($):</label>
                 <input type="number" class="text-input" id="resellerBalance" value="20">
-                <button class="unlock-btn" style="padding: 12px; font-size: 13px; margin-bottom: 12px;" onclick="addReseller()">➕ Add Reseller Account</button>
+                <button class="sub-btn" style="justify-content:center; padding: 12px; font-size: 13px; margin-bottom: 12px;" onclick="addReseller()">➕ Add Reseller Account</button>
                 <label class="form-label">Active Resellers:</label>
                 <div class="reseller-list" id="resellerContainer"></div>
             </div>
 
-            <!-- قسم توليد الأكواد (متاح للأدمن والموزعين) -->
+            <!-- قسم توليد الأكواد -->
             <div class="section-title">🛒 Buy & Generate Key</div>
             <label class="form-label">📦 Product Type:</label>
             <select class="select-box" id="productType">
@@ -432,190 +287,375 @@
                 <option value="3.00" data-days="7">7 Days - $3.00</option>
                 <option value="10.00" data-days="30">30 Days - $10.00</option>
             </select>
-            <button class="unlock-btn" style="padding: 14px; font-size: 14px;" onclick="buyAndGenerateKey()">🛒 BUY & GENERATE KEY</button>
+            <button class="sub-btn" style="justify-content:center; padding: 14px; font-size: 14px;" onclick="buyAndGenerateKey()">🛒 BUY & GENERATE KEY</button>
 
-            <div class="key-single-box" id="singleKeyBox" style="display:none;">
-                <div class="form-label">Generated Key Code:</div>
-                <div class="key-single-text" id="generatedKeyText">SHADOW_XXX_XXX</div>
-                <button class="copy-btn" onclick="copyGeneratedKey()">📋 Copy Key</button>
+            <div style="background: #04060a; border: 2px dashed var(--accent); border-radius: 12px; padding: 12px; text-align: center; margin-top: 12px; display:none;" id="singleKeyBox">
+                <div class="form-label" style="text-align: center;">Generated Key Code:</div>
+                <div style="font-family: monospace; font-size: 13px; font-weight: bold; color: #2ecc71; margin-bottom: 8px; letter-spacing: 1px;" id="generatedKeyText">SHADOW_XXX_XXX</div>
+                <button class="logout-btn" style="background:#1e1e2d; width:100%; padding:8px;" onclick="copyGeneratedKey()">📋 Copy Key</button>
             </div>
 
-            <div class="back-link" onclick="logout()">🔒 Logout</div>
+            <button class="logout-btn" style="width:100%; margin-top:15px; padding:10px;" onclick="doLogout()">🔒 Logout</button>
         </div>
     </div>
 
-    <script>
-        let cloudResellers = [];
-        let currentUserType = "admin";
-        let currentResellerId = null;
-        let currentResellerData = null;
+</div>
 
-        function showToast(msg) {
-            let toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+<script>
+let baseConfig = {
+    "remarks": "SHADOW-v3.3-FF",
+    "inbounds": [
+        {"listen": "127.0.0.1", "port": 10808, "protocol": "socks", "settings": {"auth": "noauth", "udp": true}, "sniffing": {"destOverride": ["http", "tls", "quic"], "enabled": true}, "tag": "socks"},
+        {"listen": "127.0.0.1", "port": 10809, "protocol": "http", "sniffing": {"destOverride": ["http", "tls", "quic"], "enabled": true}, "tag": "http"}
+    ],
+    "outbounds": [
+        {
+            "protocol": "hysteria",
+            "settings": {
+                "address": "proxy-eu.dripwire.cc",
+                "port": 443,
+                "version": 2
+            },
+            "streamSettings": {
+                "hysteriaSettings": {
+                    "auth": "8456714932:38fb64e93ccdf2ca",
+                    "version": 2
+                },
+                "network": "hysteria",
+                "security": "tls",
+                "tlsSettings": {
+                    "alpn": ["h3"],
+                    "serverName": "proxy-eu.dripwire.cc",
+                    "show": false
+                }
+            },
+            "tag": "proxy"
+        },
+        {"protocol": "freedom", "tag": "direct"}
+    ],
+    "routing": {
+        "domainStrategy": "AsIs",
+        "rules": [
+            {"network": "tcp", "outboundTag": "proxy", "port": "39000-39999"},
+            {"network": "udp", "outboundTag": "proxy", "port": "10000-10999"},
+            {"network": "tcp,udp", "outboundTag": "direct"}
+        ]
+    }
+};
 
-        function togglePassVisibility() {
-            let input = document.getElementById('userInput');
-            input.type = input.type === "password" ? "text" : "password";
-        }
+let deviceId = localStorage.getItem('devId') || ('DEV-' + Math.random().toString(36).substr(2,6).toUpperCase());
+localStorage.setItem('devId', deviceId);
 
-        window.loadCloudData = async function() {
-            try {
-                const resellersSnap = await window.getDocs(window.collection(window.db, "resellers"));
-                cloudResellers = resellersSnap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
-            } catch (e) {
-                console.error("Error loading cloud data:", e);
-            }
-        };
+let activeCodeObj = null;
+let timerInterval = null;
+let cloudResellers = [];
+let currentUserType = "admin";
+let currentResellerId = null;
+let currentResellerData = null;
 
-        function renderResellersUI() {
-            let container = document.getElementById('resellerContainer');
-            container.innerHTML = '';
-            cloudResellers.forEach((r) => {
-                let div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `
-                    <span><b>${r.name}</b></span>
-                    <div>
-                        <span style="color:#2ecc71; margin-right:8px;">$${Number(r.balance).toFixed(2)}</span>
-                        <button class="delete-btn" onclick="deleteResellerCloud('${r.firestoreId}')">Delete</button>
-                    </div>
-                `;
-                container.appendChild(div);
+function showToast(msg) {
+    let toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+window.addEventListener('firebase-ready', async () => {
+    await loadCloudData();
+});
+
+async function loadCloudData() {
+    try {
+        const resellersSnap = await window.getDocs(window.collection(window.db, "resellers"));
+        cloudResellers = resellersSnap.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
+    } catch (e) {
+        console.error("Error loading cloud data:", e);
+    }
+}
+
+function switchLoginTab(t){
+    document.getElementById('formU').classList.toggle('hidden', t !== 'u');
+    document.getElementById('formA').classList.toggle('hidden', t !== 'a');
+    document.getElementById('tabU').classList.toggle('active', t === 'u');
+    document.getElementById('tabA').classList.toggle('active', t === 'a');
+}
+
+function switchNav(page){
+    document.getElementById('homePage').classList.remove('active');
+    document.getElementById('settingsPage').classList.remove('active');
+    
+    if(page === 'home') document.getElementById('homePage').classList.add('active');
+    if(page === 'settings') document.getElementById('settingsPage').classList.add('active');
+}
+
+function toggleTool(toolName){
+    let btn = document.getElementById('btn' + toolName);
+    btn.classList.toggle('active');
+    let isActive = btn.classList.contains('active');
+    if(isActive){
+        showToast('✅ ' + toolName + ' Activated!');
+    } else {
+        showToast('❌ ' + toolName + ' Deactivated.');
+    }
+}
+
+function changeVpnServer(region){
+    if(region === 'india') {
+        baseConfig.outbounds[0].settings.address = "proxy-in.dripwire.cc";
+        baseConfig.outbounds[0].streamSettings.tlsSettings.serverName = "proxy-in.dripwire.cc";
+    } else if(region === 'egypt') {
+        baseConfig.outbounds[0].settings.address = "proxy-eg.dripwire.cc";
+        baseConfig.outbounds[0].streamSettings.tlsSettings.serverName = "proxy-eg.dripwire.cc";
+    } else if(region === 'algeria') {
+        baseConfig.outbounds[0].settings.address = "proxy-dz.dripwire.cc";
+        baseConfig.outbounds[0].streamSettings.tlsSettings.serverName = "proxy-dz.dripwire.cc";
+    } else if(region === 'tunisia') {
+        baseConfig.outbounds[0].settings.address = "proxy-tn.dripwire.cc";
+        baseConfig.outbounds[0].streamSettings.tlsSettings.serverName = "proxy-tn.dripwire.cc";
+    } else {
+        baseConfig.outbounds[0].settings.address = "proxy-eu.dripwire.cc";
+        baseConfig.outbounds[0].streamSettings.tlsSettings.serverName = "proxy-eu.dripwire.cc";
+    }
+}
+
+function launchHappVpn(){
+    let jsonString = JSON.stringify(baseConfig);
+    let encodedConfig = "Happ://crypt5/" + btoa(jsonString);
+    window.location.href = encodedConfig;
+}
+
+// تسجيل دخول المستخدم العادي بالمفتاح
+async function loginUser(){
+    let codeVal = document.getElementById('codeIn').value.trim();
+    if(!codeVal) return alert("Please enter your access key!");
+
+    try {
+        // البحث عن الكود في مجموعة keys أو codes
+        let keysSnap = await window.getDocs(window.collection(window.db, "keys"));
+        let foundKey = null;
+
+        keysSnap.forEach(d => {
+            let data = d.data();
+            if(data.code === codeVal) foundKey = data;
+        });
+
+        if(!foundKey){
+            // محاولة البحث في مجموعة codes الاحتياطية
+            let codesSnap = await window.getDocs(window.collection(window.db, "codes"));
+            codesSnap.forEach(d => {
+                let data = d.data();
+                if(data.code === codeVal) foundKey = data;
             });
         }
 
-        window.handleLogin = async function() {
-            let val = document.getElementById('userInput').value.trim();
-            if (!val) return alert("Please enter Admin Password or Reseller Username!");
+        if(!foundKey){
+            return alert('❌ Invalid or expired key!');
+        }
 
-            await window.loadCloudData();
+        if(foundKey.locked){
+            return alert('🔒 This key has been locked!');
+        }
 
-            // كلمة مرور الأدمن المطلوبة: ADHAM
-            if (val === "ADHAM" || val === "adham") {
-                currentUserType = "admin";
-                document.getElementById('panelTitle').innerText = "👑 Admin Panel";
-                document.getElementById('accountBalance').innerText = "UNLIMITED";
-                document.getElementById('adminResellerSection').style.display = 'block';
-                showDashboard();
-            } else {
-                let found = cloudResellers.find(r => r.name.toLowerCase() === val.toLowerCase());
-                if (found) {
-                    currentUserType = "reseller";
-                    currentResellerId = found.firestoreId;
-                    currentResellerData = found;
-                    document.getElementById('panelTitle').innerText = `👤 Seller: ${found.name}`;
-                    document.getElementById('accountBalance').innerText = `$${Number(found.balance).toFixed(2)}`;
-                    document.getElementById('adminResellerSection').style.display = 'none';
-                    showDashboard();
-                } else {
-                    alert("❌ Invalid Admin Password or Reseller Username!");
-                }
-            }
-        };
+        let now = new Date().getTime();
+        let expTime = foundKey.expiresAt || new Date(foundKey.exp).getTime();
+        if(expTime < now){
+            return alert('⏰ This key has expired!');
+        }
 
-        function showDashboard() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('dashboardScreen').classList.add('active');
+        activeCodeObj = foundKey;
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('homePage').classList.add('active');
+        
+        document.getElementById('activeKeyView').innerText = foundKey.code;
+        document.getElementById('deviceSlot').innerText = "1/1";
+        document.getElementById('createdDate').innerText = new Date().toLocaleDateString();
+        document.getElementById('expireDate').innerText = new Date(expTime).toLocaleDateString();
+
+        startAppTimer(expTime);
+        launchHappVpn();
+
+    } catch(e) {
+        alert('Login Error: ' + e.message);
+    }
+}
+
+// تسجيل دخول الأدمن برمز 050707070 أو الموزعين
+async function handleLogin(){
+    let val = document.getElementById('userInput').value.trim();
+    if(!val) return alert("Please enter Admin Password or Reseller Username!");
+
+    await loadCloudData();
+
+    // باسورد الأدمن الجديد: 050707070
+    if(val === "050707070"){
+        currentUserType = "admin";
+        document.getElementById('panelTitle').innerText = "👑 Admin Panel";
+        document.getElementById('accountBalance').innerText = "UNLIMITED";
+        document.getElementById('adminResellerSection').style.display = 'block';
+        showPanelScreen();
+    } else {
+        let found = cloudResellers.find(r => r.name.toLowerCase() === val.toLowerCase());
+        if(found){
+            currentUserType = "reseller";
+            currentResellerId = found.firestoreId;
+            currentResellerData = found;
+            document.getElementById('panelTitle').innerText = `👤 Seller: ${found.name}`;
+            document.getElementById('accountBalance').innerText = `$${Number(found.balance).toFixed(2)}`;
+            document.getElementById('adminResellerSection').style.display = 'none';
+            showPanelScreen();
+        } else {
+            alert("❌ Incorrect Admin Password or Reseller Username!");
+        }
+    }
+}
+
+function showPanelScreen(){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('adminPanelScreen').classList.add('active');
+    renderResellersUI();
+}
+
+function renderResellersUI() {
+    let container = document.getElementById('resellerContainer');
+    container.innerHTML = '';
+    cloudResellers.forEach((r) => {
+        let div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+            <span><b>${r.name}</b></span>
+            <div>
+                <span style="color:#2ecc71; margin-right:8px;">$${Number(r.balance).toFixed(2)}</span>
+                <button class="delete-btn" onclick="deleteResellerCloud('${r.firestoreId}')">Delete</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.addReseller = async function() {
+    let name = document.getElementById('resellerName').value.trim();
+    let balance = parseFloat(document.getElementById('resellerBalance').value);
+
+    if (!name) return alert('Please enter username');
+    if (cloudResellers.some(r => r.name.toLowerCase() === name.toLowerCase())) {
+        return alert('Username already exists!');
+    }
+
+    try {
+        const docRef = await window.addDoc(window.collection(window.db, "resellers"), {
+            name: name,
+            balance: balance || 0
+        });
+        cloudResellers.push({ firestoreId: docRef.id, name: name, balance: balance || 0 });
+        renderResellersUI();
+        document.getElementById('resellerName').value = '';
+        showToast(`✓ Reseller ${name} added!`);
+    } catch (e) {
+        alert("Error saving to Firebase: " + e.message);
+    }
+};
+
+window.deleteResellerCloud = async function(firestoreId) {
+    if (confirm("Delete this reseller?")) {
+        try {
+            await window.deleteDoc(window.doc(window.db, "resellers", firestoreId));
+            cloudResellers = cloudResellers.filter(r => r.firestoreId !== firestoreId);
             renderResellersUI();
+            showToast("✓ Reseller deleted!");
+        } catch (e) {
+            alert("Error deleting: " + e.message);
         }
+    }
+};
 
-        function logout() {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('loginScreen').classList.add('active');
-            document.getElementById('singleKeyBox').style.display = 'none';
-            document.getElementById('userInput').value = '';
+window.buyAndGenerateKey = async function() {
+    let priceSelect = document.getElementById('validity');
+    let price = parseFloat(priceSelect.value);
+    let selectedOption = priceSelect.options[priceSelect.selectedIndex];
+    let daysToAdd = parseInt(selectedOption.getAttribute('data-days')) || 1;
+
+    if (currentUserType === "reseller") {
+        if (currentResellerData.balance < price) {
+            return alert("❌ Insufficient balance!");
         }
-
-        window.addReseller = async function() {
-            let name = document.getElementById('resellerName').value.trim();
-            let balance = parseFloat(document.getElementById('resellerBalance').value);
-
-            if (!name) return alert('Please enter username');
-            if (cloudResellers.some(r => r.name.toLowerCase() === name.toLowerCase())) {
-                return alert('Username already exists!');
-            }
-
-            try {
-                const docRef = await window.addDoc(window.collection(window.db, "resellers"), {
-                    name: name,
-                    balance: balance || 0
-                });
-                cloudResellers.push({ firestoreId: docRef.id, name: name, balance: balance || 0 });
-                renderResellersUI();
-                document.getElementById('resellerName').value = '';
-                showToast(`✓ Reseller ${name} saved to Cloud!`);
-            } catch (e) {
-                alert("Error saving to Firebase: " + e.message);
-            }
-        };
-
-        window.deleteResellerCloud = async function(firestoreId) {
-            if (confirm("Delete this reseller?")) {
-                try {
-                    await window.deleteDoc(window.doc(window.db, "resellers", firestoreId));
-                    cloudResellers = cloudResellers.filter(r => r.firestoreId !== firestoreId);
-                    renderResellersUI();
-                    showToast("✓ Reseller deleted!");
-                } catch (e) {
-                    alert("Error deleting: " + e.message);
-                }
-            }
-        };
-
-        // توليد الأكواد بالصيغة المطلوبة: SHADOW_XXX_XXX
-        window.buyAndGenerateKey = async function() {
-            let priceSelect = document.getElementById('validity');
-            let price = parseFloat(priceSelect.value);
-            let selectedOption = priceSelect.options[priceSelect.selectedIndex];
-            let daysToAdd = parseInt(selectedOption.getAttribute('data-days')) || 1;
-
-            if (currentUserType === "reseller") {
-                if (currentResellerData.balance < price) {
-                    return alert("❌ Insufficient balance!");
-                }
-                currentResellerData.balance -= price;
-                
-                try {
-                    await window.updateDoc(window.doc(window.db, "resellers", currentResellerId), {
-                        balance: currentResellerData.balance
-                    });
-                    document.getElementById('accountBalance').innerText = `$${Number(currentResellerData.balance).toFixed(2)}`;
-                } catch (e) {
-                    return alert("Error updating balance: " + e.message);
-                }
-            }
-
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let part1 = '';
-            let part2 = '';
-            for (let i = 0; i < 3; i++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
-            for (let i = 0; i < 3; i++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
-            
-            let key = `SHADOW_${part1}_${part2}`;
-            let expiryTimestamp = new Date().getTime() + (daysToAdd * 24 * 60 * 60 * 1000);
-
-            try {
-                await window.addDoc(window.collection(window.db, "keys"), { 
-                    code: key,
-                    expiresAt: expiryTimestamp 
-                });
-
-                document.getElementById('generatedKeyText').innerText = key;
-                document.getElementById('singleKeyBox').style.display = 'block';
-                showToast("✓ Key generated & saved to Cloud!");
-            } catch (e) {
-                alert("Error saving key: " + e.message);
-            }
-        };
-
-        function copyGeneratedKey() {
-            let text = document.getElementById('generatedKeyText').innerText;
-            navigator.clipboard.writeText(text).then(() => showToast("Key Copied!"));
+        currentResellerData.balance -= price;
+        
+        try {
+            await window.updateDoc(window.doc(window.db, "resellers", currentResellerId), {
+                balance: currentResellerData.balance
+            });
+            document.getElementById('accountBalance').innerText = `$${Number(currentResellerData.balance).toFixed(2)}`;
+        } catch (e) {
+            return alert("Error updating balance: " + e.message);
         }
-    </script>
+    }
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let part1 = '', part2 = '';
+    for (let i = 0; i < 3; i++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (let i = 0; i < 3; i++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
+    
+    let key = `SHADOW_${part1}_${part2}`;
+    let expiryTimestamp = new Date().getTime() + (daysToAdd * 24 * 60 * 60 * 1000);
+
+    try {
+        await window.addDoc(window.collection(window.db, "keys"), { 
+            code: key,
+            expiresAt: expiryTimestamp,
+            locked: false
+        });
+
+        document.getElementById('generatedKeyText').innerText = key;
+        document.getElementById('singleKeyBox').style.display = 'block';
+        showToast("✓ Key generated & saved!");
+    } catch (e) {
+        alert("Error saving key: " + e.message);
+    }
+};
+
+function copyGeneratedKey() {
+    let text = document.getElementById('generatedKeyText').innerText;
+    navigator.clipboard.writeText(text).then(() => showToast("Key Copied!"));
+}
+
+function startAppTimer(expTime){
+    if(timerInterval) clearInterval(timerInterval);
+    function update(){
+        let diff = expTime - new Date().getTime();
+        if(diff <= 0){
+            document.getElementById('timerDisplay').innerText = 'EXPIRED';
+            clearInterval(timerInterval);
+            return;
+        }
+        let h = Math.floor(diff / 3600000);
+        let m = Math.floor((diff % 3600000) / 60000);
+        let s = Math.floor((diff % 60000) / 1000);
+        
+        document.getElementById('timerDisplay').innerHTML = 
+            String(h).padStart(2,'0') + '<span>H</span> ' + 
+            String(m).padStart(2,'0') + '<span>M</span> ' + 
+            String(s).padStart(2,'0') + '<span>S</span>';
+    }
+    update();
+    timerInterval = setInterval(update, 1000);
+}
+
+function copyActiveKey(){
+    if(activeCodeObj){
+        navigator.clipboard.writeText(activeCodeObj.code);
+        showToast('✓ Key copied!');
+    }
+}
+
+function doLogout(){
+    if(timerInterval) clearInterval(timerInterval);
+    activeCodeObj = null;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('loginScreen').classList.add('active');
+    document.getElementById('codeIn').value = '';
+    document.getElementById('userInput').value = '';
+    document.getElementById('singleKeyBox').style.display = 'none';
+}
+</script>
 </body>
 </html>
