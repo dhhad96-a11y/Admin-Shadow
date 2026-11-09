@@ -97,10 +97,10 @@
                 <div class="reseller-list" id="resellerContainer"></div>
             </div>
 
-            <div class="section-title">🛒 Generate Code & Encrypted Config</div>
+            <div class="section-title">🛒 Generate SHWD-XXX-XXX Key</div>
             <label class="form-label">📦 Product Type:</label>
             <select class="select-box" id="productType" style="margin-bottom:8px;">
-                <option value="Shadow V3">Shadow v3.3 - Standard Key & Config</option>
+                <option value="Shadow V3">Shadow v3.3 - Locked Config</option>
             </select>
             <label class="form-label">⏳ Validity & Duration:</label>
             <select class="select-box" id="validity" style="margin-bottom:12px;">
@@ -111,18 +111,12 @@
                 <option value="3.00" data-days="7">7 Days - $3.00</option>
                 <option value="10.00" data-days="30">30 Days - $10.00</option>
             </select>
-            <button class="unlock-btn" style="padding: 14px; font-size: 14px;" onclick="buyAndGenerateKey()">🛒 GENERATE CODE & CONFIG</button>
+            <button class="unlock-btn" style="padding: 14px; font-size: 14px;" onclick="buyAndGenerateKey()">🛒 GENERATE ACTIVATION KEY</button>
 
-            <!-- صندوق عرض الكود العادي والكونفيغ المشفر للنسخ -->
             <div style="background: #040407; border: 2px dashed #ff3333; border-radius: 12px; padding: 15px; text-align: center; margin-top: 15px; display:none;" id="singleKeyBox">
-                <div class="form-label" style="text-align: center;">Generated Code:</div>
-                <div style="font-family: monospace; font-size: 13px; font-weight: bold; color: #ff3333; margin-bottom: 10px;" id="generatedCodeText">SHWD_XXX</div>
-                
-                <div class="form-label" style="text-align: center;">Encrypted Config (For Clipboard):</div>
-                <div style="font-family: monospace; font-size: 10px; word-break: break-all; color: #2ecc71; margin-bottom: 10px; max-height: 50px; overflow-y: auto;" id="generatedConfigText">happ://add/...</div>
-                
-                <button class="unlock-btn" style="padding: 8px; font-size: 11px; background: #1f1f2e; margin-bottom: 5px;" onclick="copyCodeOnly()">📋 Copy Code Only</button>
-                <button class="unlock-btn" style="padding: 8px; font-size: 11px; background: #ff3333;" onclick="copyEncryptedConfig()">📋 Copy Encrypted Config</button>
+                <div class="form-label" style="text-align: center;">Activation Code (SHWD-XXX-XXX):</div>
+                <div style="font-family: monospace; font-size: 15px; font-weight: bold; color: #ff3333; margin-bottom: 12px;" id="generatedCodeText">SHWD-XXX-XXX</div>
+                <button class="unlock-btn" style="padding: 10px; font-size: 12px; background: #1f1f2e;" onclick="copyCodeOnly()">📋 Copy Activation Code</button>
             </div>
 
             <div class="back-link" onclick="logout()">🔒 Logout</div>
@@ -224,7 +218,6 @@
             }
         };
 
-        // توليد الكود العادي يبدأ بـ SHWD مع كونفيغ مشفر مقفل بمدة زمنية
         window.buyAndGenerateKey = async function() {
             let priceSelect = document.getElementById('validity');
             let price = parseFloat(priceSelect.value);
@@ -234,11 +227,8 @@
             let daysToAdd = parseInt(selectedOption.getAttribute('data-days')) || 0;
 
             let totalMilliseconds = 0;
-            if (hoursToAdd > 0) {
-                totalMilliseconds = hoursToAdd * 60 * 60 * 1000;
-            } else if (daysToAdd > 0) {
-                totalMilliseconds = daysToAdd * 24 * 60 * 60 * 1000;
-            }
+            if (hoursToAdd > 0) totalMilliseconds = hoursToAdd * 60 * 60 * 1000;
+            else if (daysToAdd > 0) totalMilliseconds = daysToAdd * 24 * 60 * 60 * 1000;
 
             if (currentUserType === "reseller") {
                 if (currentResellerData.balance < price) return alert("❌ Insufficient balance!");
@@ -254,7 +244,7 @@
             for (let i = 0; i < 3; i++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
             for (let i = 0; i < 3; i++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
             
-            // الكود العادي يبدأ بـ SHWD
+            // صيغة الكود المطلوبة SHWD-XXX-XXX
             let key = `SHWD-${part1}-${part2}`;
             let expiryTimestamp = new Date().getTime() + totalMilliseconds;
 
@@ -296,18 +286,13 @@
             try {
                 await window.addDoc(window.collection(window.db, "keys"), { code: key, expiresAt: expiryTimestamp, locked: false, config: encryptedString });
                 document.getElementById('generatedCodeText').innerText = key;
-                document.getElementById('generatedConfigText').innerText = encryptedString;
                 document.getElementById('singleKeyBox').style.display = 'block';
-                showToast("✓ Code & Encrypted Config Generated!");
+                showToast("✓ Activation Key Generated & Saved!");
             } catch (e) { alert("Error: " + e.message); }
         };
 
         function copyCodeOnly() {
-            navigator.clipboard.writeText(document.getElementById('generatedCodeText').innerText).then(() => showToast("✓ Code Copied!"));
-        }
-
-        function copyEncryptedConfig() {
-            navigator.clipboard.writeText(document.getElementById('generatedConfigText').innerText).then(() => showToast("✓ Encrypted Config Copied to Clipboard!"));
+            navigator.clipboard.writeText(document.getElementById('generatedCodeText').innerText).then(() => showToast("✓ Activation Code Copied!"));
         }
     </script>
 </body>
